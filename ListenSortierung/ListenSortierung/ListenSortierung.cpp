@@ -2,6 +2,12 @@
 #include <stdlib.h>
 #include <math.h>
 
-void main() {
+char getRandomCharacter();
 
+int main() {
+	system("pause");
+}
+
+char getRandomCharacter() {
+	return rand() % 26 + 65;
 }
