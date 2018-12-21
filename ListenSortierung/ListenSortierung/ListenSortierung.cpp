@@ -13,12 +13,44 @@ typedef struct Person {
 char getRandomCharacter();
 int getRandomYear();
 struPerson* createList(int number);
+void printMenu(bool AnyAvaiableList);
 
 int main() {
 	struPerson* pStart = createList(5);
+	bool AnyAvaiableList = false;
 
+	printMenu(AnyAvaiableList);
+}
 
-	system("pause");
+void printMenu(bool AnyAvaiableList) {
+	if (AnyAvaiableList == false) {
+		printf("******************************");
+		printf("\n\tVerkette Liste");
+		printf("\n******************************");
+
+		printf("\n\n\n[1] Liste erstellen");
+		printf("\n[2] Liste loeschen ");
+		printf("\n[3] Person loeschen");
+		printf("\n[4] Liste sortieren");
+		printf("\n[5] Liste ausgeben");
+		printf("\n[6] Programm beenden\n");
+		system("pause");
+	}
+
+	else
+	{
+		printf("******************************");
+		printf("\n\tVerkette Liste");
+		printf("\n******************************");
+
+		printf("\n\n\n[1] Liste erstellen");
+		printf("\n[2] Liste loeschen ");
+		printf("\n[3] Person loeschen");
+		printf("\n[4] Liste sortieren");
+		printf("\n[5] Liste ausgeben");
+		printf("\n[6] Programm beenden\n");
+		system("pause");
+	}
 }
 
 // Erstellt eine Liste mit der Anzahl angegebener Elementen
@@ -39,7 +71,7 @@ struPerson* createList(int number) {
 	return pStart;
 }
 
-// Gibt einen Zufallsbuchstaben von typ char zurück
+// Gibt einen Zufallsbuchstaben von typ char zurï¿½ck
 char getRandomCharacter() {
 	return rand() % 26 + 65;
 }
