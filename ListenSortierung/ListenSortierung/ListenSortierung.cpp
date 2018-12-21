@@ -22,6 +22,7 @@ int main() {
 	printMenu(AnyAvaiableList);
 }
 
+// Gibt das Menu in der Konsole aus
 void printMenu(bool AnyAvaiableList) {
 	if (AnyAvaiableList == false) {
 		printf("******************************");
