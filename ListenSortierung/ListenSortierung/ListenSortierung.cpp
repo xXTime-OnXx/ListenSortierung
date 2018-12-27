@@ -10,48 +10,18 @@ typedef struct Person {
 	struct Person* pNext;
 } struPerson;
 
+// Methoden Prototypen
 char getRandomCharacter();
 int getRandomYear();
 struPerson* createList(int number);
 void printMenu(bool AnyAvaiableList);
 
+// main Methode
 int main() {
 	struPerson* pStart = createList(5);
-	bool AnyAvaiableList = false;
+	bool isListAvailable = false;
 
-	printMenu(AnyAvaiableList);
-}
-
-// Gibt das Menu in der Konsole aus
-void printMenu(bool AnyAvaiableList) {
-	if (AnyAvaiableList == false) {
-		printf("******************************");
-		printf("\n\tVerkette Liste");
-		printf("\n******************************");
-
-		printf("\n\n\n[1] Liste erstellen");
-		printf("\n[2] Liste loeschen ");
-		printf("\n[3] Person loeschen");
-		printf("\n[4] Liste sortieren");
-		printf("\n[5] Liste ausgeben");
-		printf("\n[6] Programm beenden\n");
-		system("pause");
-	}
-
-	else
-	{
-		printf("******************************");
-		printf("\n\tVerkette Liste");
-		printf("\n******************************");
-
-		printf("\n\n\n[1] Liste erstellen");
-		printf("\n[2] Liste loeschen ");
-		printf("\n[3] Person loeschen");
-		printf("\n[4] Liste sortieren");
-		printf("\n[5] Liste ausgeben");
-		printf("\n[6] Programm beenden\n");
-		system("pause");
-	}
+	printMenu(isListAvailable);
 }
 
 // Erstellt eine Liste mit der Anzahl angegebener Elementen
@@ -72,11 +42,54 @@ struPerson* createList(int number) {
 	return pStart;
 }
 
-// Gibt einen Zufallsbuchstaben von typ char zur�ck
+// Löscht und entfernt alle Element der angegebene Liste
+void deleteList(struPerson* pStart) {
+	struPerson* pFirst = pStart;
+	struPerson* pNext = pStart->pNext;
+	while (pFirst != NULL) {
+		pNext = pFirst->pNext;
+		free(pFirst);
+		pFirst = pNext;
+	}
+}
+
+// Gibt einen Zufallsbuchstaben von typ char zurück
 char getRandomCharacter() {
 	return rand() % 26 + 65;
 }
 
+// Gibt eine Zufallszahl zwischen 1900 und 2018 zurück
 int getRandomYear() {
 	return rand() % 119 + 1900;
+}
+
+// Gibt das Menu in der Konsole aus
+void printMenu(bool isListAvailable) {
+	if (!isListAvailable) {
+		printf("******************************");
+		printf("\n\tVerkette Liste");
+		printf("\n******************************");
+
+		printf("\n\n\n[1] Liste erstellen");
+		printf("\n[2] Liste loeschen ");
+		printf("\n[3] Person loeschen");
+		printf("\n[4] Liste sortieren");
+		printf("\n[5] Liste ausgeben");
+		printf("\n[6] Programm beenden\n\n");
+		system("pause");
+	}
+	else
+	{
+		printf("******************************");
+		printf("\n\tVerkette Liste");
+		printf("\n******************************");
+
+		printf("\n\n\n[1] Liste erstellen");
+		printf("\n[2] Liste loeschen ");
+		printf("\n[3] Person loeschen");
+		printf("\n[4] Liste sortieren");
+		printf("\n[5] Liste ausgeben");
+		printf("\n[6] Programm beenden\n\n");
+		system("pause");
+	}
 }
