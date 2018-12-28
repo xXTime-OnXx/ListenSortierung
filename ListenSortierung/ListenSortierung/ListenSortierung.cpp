@@ -13,21 +13,52 @@ typedef struct Person {
 // Methoden Prototypen
 char getRandomCharacter();
 int getRandomYear();
-struPerson* createList(int number);
+struPerson* createList();
+void deleteList(struPerson* pStart);
 void printMenu(bool AnyAvaiableList);
 
 // main Methode
 int main() {
-	struPerson* pStart = createList(5);
+	struPerson* pStart = NULL;
 	bool isListAvailable = false;
+	int input = NULL;
+	
+	while (input != 6) {
+		printMenu();
+		printf("Geben sie die Zahl der gewünschten Aktion ein: ");
+		scanf_s("%i", &input);
 
-	printMenu(isListAvailable);
+		switch (input) {
+			case 1:
+				pStart = createList();
+				break;
+
+			case 2:
+				deleteList(pStart);
+				pStart = NULL;
+				break;
+
+			default:
+				input = 0;
+				break;
+		}
+
+		if (pStart != NULL) {
+			isListAvailable = true;
+		}
+
+		system("cls");
+	}
 }
 
 // Erstellt eine Liste mit der Anzahl angegebener Elementen
-struPerson* createList(int number) {
+struPerson* createList() {
+	int number = 0;
 	struPerson* pStart = NULL;
 	struPerson* pLast = NULL;
+
+	printf("Wie viele Personen sollen in ihrer Liste generiert werden? ");
+	scanf_s("%i", &number);
 
 	for (int i = 0; i < number; i++) {
 		struPerson *pPerson = (struPerson*)malloc(sizeof(struPerson));
@@ -64,32 +95,15 @@ int getRandomYear() {
 }
 
 // Gibt das Menu in der Konsole aus
-void printMenu(bool isListAvailable) {
-	if (!isListAvailable) {
-		printf("******************************");
-		printf("\n\tVerkette Liste");
-		printf("\n******************************");
+void printMenu() {
+	printf("******************************");
+	printf("\n\tVerkette Liste");
+	printf("\n******************************");
 
-		printf("\n\n\n[1] Liste erstellen");
-		printf("\n[2] Liste loeschen ");
-		printf("\n[3] Person loeschen");
-		printf("\n[4] Liste sortieren");
-		printf("\n[5] Liste ausgeben");
-		printf("\n[6] Programm beenden\n\n");
-		system("pause");
-	}
-	else
-	{
-		printf("******************************");
-		printf("\n\tVerkette Liste");
-		printf("\n******************************");
-
-		printf("\n\n\n[1] Liste erstellen");
-		printf("\n[2] Liste loeschen ");
-		printf("\n[3] Person loeschen");
-		printf("\n[4] Liste sortieren");
-		printf("\n[5] Liste ausgeben");
-		printf("\n[6] Programm beenden\n\n");
-		system("pause");
-	}
+	printf("\n\n\n[1] Liste erstellen");
+	printf("\n[2] Liste loeschen ");
+	printf("\n[3] Person loeschen");
+	printf("\n[4] Liste sortieren");
+	printf("\n[5] Liste ausgeben");
+	printf("\n[6] Programm beenden\n\n");
 }
