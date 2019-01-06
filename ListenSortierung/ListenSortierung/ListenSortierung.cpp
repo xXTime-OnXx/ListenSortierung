@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
 
 typedef struct Person {
@@ -11,11 +12,15 @@ typedef struct Person {
 } struPerson;
 
 // Methoden Prototypen
-char getRandomCharacter();
-int getRandomYear();
 struPerson* createList();
 void deleteList(struPerson* pStart);
-void printMenu(bool AnyAvaiableList);
+struPerson* deletePerson(struPerson* pStart);
+void printPerson(struPerson* pStart);
+
+int printApplicablePerson(struPerson* pPerson[], int number);
+char getRandomCharacter();
+int getRandomYear();
+void printMenu();
 
 // main Methode
 int main() {
@@ -37,6 +42,15 @@ int main() {
 				deleteList(pStart);
 				pStart = NULL;
 				break;
+
+			case 3:
+				pStart = deletePerson(pStart);
+				break;
+
+			case 5:
+				printPerson(pStart);
+				break;
+
 
 			default:
 				input = 0;
@@ -82,6 +96,109 @@ void deleteList(struPerson* pStart) {
 		free(pFirst);
 		pFirst = pNext;
 	}
+}
+
+// Löscht die eingegebene Person
+ struPerson* deletePerson(struPerson* pStart) {
+	 char firstname[50];
+	 char lastname[50];
+	 struPerson* pApplicablePerson[10];
+	 int numberOfApplicablePerson = 0;
+	 printf("Geben sie folgende Angaben der Person an welche sie löschen möchten: \n");
+	 printf("Vorname: ");
+	 scanf_s("%s\n", firstname);
+	 printf("Nachname: ");
+	 scanf_s("%s\n", lastname);
+
+	 for (struPerson* pPerson = pStart; pPerson != NULL; pPerson = pPerson->pNext) {
+		 if (strcmp(pPerson->firstname, firstname) == 0) {
+			 if (strcmp(pPerson->lastname, lastname) == 0) {
+				 pApplicablePerson[numberOfApplicablePerson] = pPerson;
+				 numberOfApplicablePerson++;
+			 }
+		 }
+		 
+	 }
+
+	 if (numberOfApplicablePerson == 0) {
+		 return pStart;
+	 }
+
+	 if (numberOfApplicablePerson > 0) {
+		 int person = 0;
+		 struPerson * pBefore = NULL;
+		 int i = 0;
+
+		 if (numberOfApplicablePerson > 1) {
+			 person = printApplicablePerson(pApplicablePerson, numberOfApplicablePerson);
+		 }
+
+		 for (struPerson* pPerson = pStart; pPerson != NULL; pPerson = pPerson->pNext) {
+			 if (strcmp(pPerson->firstname, firstname) == 0) {
+				 if (strcmp(pPerson->lastname, lastname) == 0) {
+					 if (i == person) {
+						 if (pStart == pPerson) {
+							 pStart = pPerson->pNext;
+							 free(pPerson);
+							 return pStart;
+						 }
+						 else {
+							 pBefore->pNext = pPerson->pNext;
+							 free(pPerson);
+							 return pStart;
+						 }
+					 }
+					 i++;
+				 }
+			 }
+			 pBefore = pPerson;
+		 }
+	 }
+}
+
+void printPerson(struPerson* pStart) {
+	int number = 0;
+	printf("Wie viele Personen der Liste sollen angezeigt werden? (0 = alle): ");
+
+
+
+	if (number == 0) {
+		int i = 1;
+		for (struPerson* pPerson = pStart; pPerson != NULL; pPerson = pPerson->pNext) {
+			char* pFirstname = &pPerson->firstname[0];
+			printf("%i. %s, %i\n", i, pFirstname, pPerson->year);
+			i++;
+		}
+	}
+	else {
+		struPerson* pPerson = pStart;
+		for (int i = 0; i < number; i++) {
+			printf("%i. %s %s, %i\n", i+1, &pPerson->firstname[0], &pPerson->lastname[0], pPerson->year);
+		}
+	}
+
+	system("pause");
+
+	
+
+	
+}
+
+// Gibt alle Personen aus welche den gleichen Namen haben und gibt die ausgewählte Person zurück
+int printApplicablePerson(struPerson* pPerson[], int number) {
+	int person = NULL;
+	printf("Welche Person möchten sie löschen?\n\n");
+
+	for (int i = 0; i < number; i++) {
+		char *firstname = &pPerson[i]->firstname[0];
+		char *lastname = &pPerson[i]->lastname[0];
+		printf("[%i] %s %s\n", i, firstname, lastname);
+	}
+
+	printf("Nummer: ");
+	scanf_s("%i\n", &person);
+
+	return person;
 }
 
 // Gibt einen Zufallsbuchstaben von typ char zurück
