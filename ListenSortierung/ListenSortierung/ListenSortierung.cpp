@@ -30,7 +30,7 @@ int main() {
 	
 	while (input != 6) {
 		printMenu();
-		printf("Geben sie die Zahl der gewünschten Aktion ein: ");
+		printf("Geben sie die Zahl der gewuenschten Aktion ein: ");
 		scanf_s("%i", &input);
 
 		switch (input) {
@@ -164,6 +164,9 @@ void printPerson(struPerson* pStart) {
 
 	if (number == 0) {
 		int i = 1;
+		system("cls");
+		printMenu();
+		printf("\n");
 		for (struPerson* pPerson = pStart; pPerson != NULL; pPerson = pPerson->pNext) {
 			char* pFirstname = &pPerson->firstname[0];
 			printf("%i. %s, %i\n", i, pFirstname, pPerson->year);
@@ -187,7 +190,7 @@ void printPerson(struPerson* pStart) {
 // Gibt alle Personen aus welche den gleichen Namen haben und gibt die ausgewählte Person zurück
 int printApplicablePerson(struPerson* pPerson[], int number) {
 	int person = NULL;
-	printf("Welche Person möchten sie löschen?\n\n");
+	printf("Welche Person moechten sie loeschen?\n\n");
 
 	for (int i = 0; i < number; i++) {
 		char *firstname = &pPerson[i]->firstname[0];
