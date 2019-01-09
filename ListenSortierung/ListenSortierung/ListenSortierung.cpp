@@ -15,8 +15,11 @@ typedef struct Person {
 struPerson* createList();
 void deleteList(struPerson* pStart);
 struPerson* deletePerson(struPerson* pStart);
+void mergeSort(struPerson** pStart);
 void printPerson(struPerson* pStart);
 
+struPerson* sortedMerge(struPerson* a, struPerson* b);
+void frontBackSplit(struPerson* source, struPerson** frontRef, struPerson** backRef);
 int printApplicablePerson(struPerson* pPerson[], int number);
 char getRandomCharacter();
 int getRandomYear();
@@ -45,6 +48,10 @@ int main() {
 
 			case 3:
 				pStart = deletePerson(pStart);
+				break;
+
+			case 4:
+				mergeSort(&pStart);
 				break;
 
 			case 5:
@@ -96,6 +103,60 @@ void deleteList(struPerson* pStart) {
 		free(pFirst);
 		pFirst = pNext;
 	}
+}
+
+// Liste sortieren
+void mergeSort(struPerson** pStart) {
+	struPerson* head = *pStart;
+	struPerson* a;
+	struPerson* b;
+
+	if ((head == NULL) || (head->pNext == NULL)) {
+		return;
+	}
+
+	frontBackSplit(head, &a, &b);
+
+	mergeSort(&a);
+	mergeSort(&b);
+
+	*pStart = sortedMerge(a, b);
+}
+
+struPerson* sortedMerge(struPerson* a, struPerson* b) {
+	struPerson* result = NULL;
+
+	if (a == NULL) {
+		return(b);
+	}
+	else if (b == NULL) {
+		return (a);
+	}
+
+	if (a->lastname <= b->lastname) {
+		result = a;
+		result->pNext = sortedMerge(a, b->pNext);
+	}
+	return (result);
+}
+
+void frontBackSplit(struPerson* source, struPerson** frontRef, struPerson** backRef) {
+	struPerson* pFast;
+	struPerson* pSlow;
+	pSlow = source;
+	pFast = source->pNext;
+
+	while (pFast != NULL) {
+		pFast = pFast->pNext;
+		if (pFast != NULL) {
+			pSlow = pSlow->pNext;
+			pFast = pFast->pNext;
+		}
+	}
+
+	*frontRef = source;
+	*backRef = pSlow->pNext;
+	pSlow->pNext = NULL;
 }
 
 // Löscht die eingegebene Person
@@ -159,7 +220,7 @@ void deleteList(struPerson* pStart) {
 void printPerson(struPerson* pStart) {
 	int number = 0;
 	printf("Wie viele Personen der Liste sollen angezeigt werden? (0 = alle): ");
-
+	scanf_s("%i", &number);
 
 
 	if (number == 0) {
@@ -168,23 +229,19 @@ void printPerson(struPerson* pStart) {
 		printMenu();
 		printf("\n");
 		for (struPerson* pPerson = pStart; pPerson != NULL; pPerson = pPerson->pNext) {
-			char* pFirstname = &pPerson->firstname[0];
-			printf("%i. %s, %i\n", i, pFirstname, pPerson->year);
+			printf("Nachname: %s\tVorname: %s\t Jahrgang: %i\n", pPerson->lastname, pPerson->firstname, pPerson->year);
 			i++;
 		}
 	}
 	else {
 		struPerson* pPerson = pStart;
 		for (int i = 0; i < number; i++) {
-			printf("%i. %s %s, %i\n", i+1, &pPerson->firstname[0], &pPerson->lastname[0], pPerson->year);
+			printf("Nachname: %s\tVorname: %s\t Jahrgang: %i\n", pPerson->lastname, pPerson->firstname, pPerson->year);
+			pPerson = pPerson->pNext;
 		}
 	}
 
 	system("pause");
-
-	
-
-	
 }
 
 // Gibt alle Personen aus welche den gleichen Namen haben und gibt die ausgewählte Person zurück
