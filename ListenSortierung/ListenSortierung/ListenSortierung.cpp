@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include "VornamensListe.cpp"
 
 
 typedef struct Person {
@@ -83,6 +84,9 @@ struPerson* createList() {
 
 	for (int i = 0; i < number; i++) {
 		struPerson *pPerson = (struPerson*)malloc(sizeof(struPerson));
+
+		VornamensListe
+
 		pPerson->firstname[0] = getRandomCharacter();
 		pPerson->lastname[0] = getRandomCharacter();
 		pPerson->year = getRandomYear();
@@ -123,6 +127,10 @@ void mergeSort(struPerson** pStart) {
 	*pStart = sortedMerge(a, b);
 }
 
+bool lessThan(struPerson* a, struPerson* b) {
+	return (a->lastname[0] <= b->lastname[0]);
+}
+
 struPerson* sortedMerge(struPerson* a, struPerson* b) {
 	struPerson* result = NULL;
 
@@ -133,8 +141,13 @@ struPerson* sortedMerge(struPerson* a, struPerson* b) {
 		return (a);
 	}
 
-	if (a->lastname <= b->lastname) {
+	if (lessThan(a, b)) {
 		result = a;
+		result->pNext = sortedMerge(a->pNext, b);
+	}
+	else
+	{
+		result = b;
 		result->pNext = sortedMerge(a, b->pNext);
 	}
 	return (result);
@@ -284,3 +297,5 @@ void printMenu() {
 	printf("\n[5] Liste ausgeben");
 	printf("\n[6] Programm beenden\n\n");
 }
+
+
