@@ -21,6 +21,7 @@ void printPerson(struPerson* pStart);
 
 struPerson* sortedMerge(struPerson* a, struPerson* b);
 void frontBackSplit(struPerson* source, struPerson** frontRef, struPerson** backRef);
+struPerson* checkFirstPerson(struPerson* pStart, char lastname[], char firstname[]);
 int printApplicablePerson(struPerson* pPerson[], int number);
 char getRandomCharacter();
 int getRandomYear();
@@ -84,9 +85,18 @@ struPerson* createList() {
 
 	for (int i = 0; i < number; i++) {
 		struPerson *pPerson = (struPerson*)malloc(sizeof(struPerson));
+		//pPerson->firstname[0] = getRandomCharacter();
+		char* pFirstname = &pPerson->firstname[0];
+		*pFirstname = getRandomCharacter();
+		pFirstname++;
+		*pFirstname = '\0';
+		
+		//pPerson->lastname[0] = getRandomCharacter();
+		char* pLastname = &pPerson->lastname[0];
+		*pLastname = getRandomCharacter();
+		pLastname++;
+		*pLastname = '\0';
 
-		pPerson->firstname[0] = getRandomCharacter();
-		pPerson->lastname[0] = getRandomCharacter();
 		pPerson->year = getRandomYear();
 		pPerson->pNext = NULL;
 		if (pStart == NULL) pStart = pPerson;
@@ -107,6 +117,36 @@ void deleteList(struPerson* pStart) {
 	}
 }
 
+// Löscht die Person mit den selben eingegeben Nach- und Vorname
+struPerson* deletePerson(struPerson* pStart) {
+	char firstname[50];
+	char lastname[50];
+	struPerson* pApplicablePerson[10];
+
+	// ---------------------------------
+	// Einlesen funktioniert nicht!!!
+	// ---------------------------------
+	printf("Geben sie folgende Angaben der Person an welche sie löschen möchten: \n");
+	printf("Vorname: ");
+	scanf_s("%s\n", firstname);
+	printf("Nachname: ");
+	scanf_s("%s\n", lastname);
+
+	struPerson* pNewStart = checkFirstPerson(pStart, lastname, firstname);
+
+	struPerson* prev = pNewStart;
+	while (prev->pNext != NULL) {
+		if (prev->pNext->lastname[0] == lastname[0] && prev->pNext->firstname[0]) {
+			struPerson* target = prev->pNext;
+			prev->pNext = prev->pNext->pNext;
+			free(target);
+		}
+		prev = prev->pNext;
+	}
+	return pNewStart;
+}
+
+
 // Liste sortieren
 void mergeSort(struPerson** pStart) {
 	struPerson* head = *pStart;
@@ -125,10 +165,20 @@ void mergeSort(struPerson** pStart) {
 	*pStart = sortedMerge(a, b);
 }
 
+// überfrüft ob die erste Person in der Sortierung vor der zweiten kommt
 bool lessThan(struPerson* a, struPerson* b) {
-	return (a->lastname[0] <= b->lastname[0]);
+	if (a->lastname[0] <= b->lastname[0]) {
+		if (a->firstname <= b->firstname) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	return false;
 }
 
+//
 struPerson* sortedMerge(struPerson* a, struPerson* b) {
 	struPerson* result = NULL;
 
@@ -151,6 +201,7 @@ struPerson* sortedMerge(struPerson* a, struPerson* b) {
 	return (result);
 }
 
+//
 void frontBackSplit(struPerson* source, struPerson** frontRef, struPerson** backRef) {
 	struPerson* pFast;
 	struPerson* pSlow;
@@ -170,61 +221,21 @@ void frontBackSplit(struPerson* source, struPerson** frontRef, struPerson** back
 	pSlow->pNext = NULL;
 }
 
-// Löscht die eingegebene Person
- struPerson* deletePerson(struPerson* pStart) {
-	 char firstname[50];
-	 char lastname[50];
-	 struPerson* pApplicablePerson[10];
-	 int numberOfApplicablePerson = 0;
-	 printf("Geben sie folgende Angaben der Person an welche sie löschen möchten: \n");
-	 printf("Vorname: ");
-	 scanf_s("%s\n", firstname);
-	 printf("Nachname: ");
-	 scanf_s("%s\n", lastname);
-
-	 for (struPerson* pPerson = pStart; pPerson != NULL; pPerson = pPerson->pNext) {
-		 if (strcmp(pPerson->firstname, firstname) == 0) {
-			 if (strcmp(pPerson->lastname, lastname) == 0) {
-				 pApplicablePerson[numberOfApplicablePerson] = pPerson;
-				 numberOfApplicablePerson++;
-			 }
-		 }
-		 
-	 }
-
-	 if (numberOfApplicablePerson == 0) {
-		 return pStart;
-	 }
-
-	 if (numberOfApplicablePerson > 0) {
-		 int person = 0;
-		 struPerson * pBefore = NULL;
-		 int i = 0;
-
-		 if (numberOfApplicablePerson > 1) {
-			 person = printApplicablePerson(pApplicablePerson, numberOfApplicablePerson);
+// Überprüft ob die erste Person der Liste gelöscht werden soll
+struPerson* checkFirstPerson(struPerson* pStart, char lastname[], char firstname[]) {
+	 if (pStart->lastname[0] == lastname[0] && pStart->firstname[0] == firstname[0]) {
+		 if (pStart->pNext == NULL) {
+			 printf("Es existiert nur 1 Element. Um die Liste zu löschen wählen sie die dafür zuständige Funktion.");
+			 system("pause");
+			 return pStart;
 		 }
 
-		 for (struPerson* pPerson = pStart; pPerson != NULL; pPerson = pPerson->pNext) {
-			 if (strcmp(pPerson->firstname, firstname) == 0) {
-				 if (strcmp(pPerson->lastname, lastname) == 0) {
-					 if (i == person) {
-						 if (pStart == pPerson) {
-							 pStart = pPerson->pNext;
-							 free(pPerson);
-							 return pStart;
-						 }
-						 else {
-							 pBefore->pNext = pPerson->pNext;
-							 free(pPerson);
-							 return pStart;
-						 }
-					 }
-					 i++;
-				 }
-			 }
-			 pBefore = pPerson;
-		 }
+		 struPerson* pNewStart = pStart->pNext;
+		 free(pStart);
+
+		 pNewStart = checkFirstPerson(pNewStart, lastname, firstname);
+
+		 return pNewStart;
 	 }
 }
 
