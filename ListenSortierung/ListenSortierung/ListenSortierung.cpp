@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include "VornamensListe.cpp"
+
 
 
 typedef struct Person {
@@ -84,8 +84,6 @@ struPerson* createList() {
 
 	for (int i = 0; i < number; i++) {
 		struPerson *pPerson = (struPerson*)malloc(sizeof(struPerson));
-
-		VornamensListe
 
 		pPerson->firstname[0] = getRandomCharacter();
 		pPerson->lastname[0] = getRandomCharacter();
