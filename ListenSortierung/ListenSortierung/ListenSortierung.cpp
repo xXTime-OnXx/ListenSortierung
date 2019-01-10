@@ -85,13 +85,12 @@ struPerson* createList() {
 
 	for (int i = 0; i < number; i++) {
 		struPerson *pPerson = (struPerson*)malloc(sizeof(struPerson));
-		//pPerson->firstname[0] = getRandomCharacter();
+
 		char* pFirstname = &pPerson->firstname[0];
 		*pFirstname = getRandomCharacter();
 		pFirstname++;
 		*pFirstname = '\0';
 		
-		//pPerson->lastname[0] = getRandomCharacter();
 		char* pLastname = &pPerson->lastname[0];
 		*pLastname = getRandomCharacter();
 		pLastname++;
@@ -119,29 +118,26 @@ void deleteList(struPerson* pStart) {
 
 // Löscht die Person mit den selben eingegeben Nach- und Vorname
 struPerson* deletePerson(struPerson* pStart) {
-	char firstname;
-	char lastname;
-	char firstnameArray[30];
-	char lastnameArray[30];
-	struPerson* pApplicablePerson[10];
+	char lastname[30];
+	char firstname[30];
 
-	// ---------------------------------
-	// Einlesen funktioniert nicht!!!
-	// ---------------------------------
 	printf("Geben sie folgende Angaben der Person an welche sie löschen möchten: \n");
-	printf("Vorname: ");
-	scanf_s("%c\n", &firstname);
 	printf("Nachname: ");
-	scanf_s("%c\n", &lastname);
+	scanf_s(" %c", &lastname[0]);
+	printf("Vorname: ");
+	scanf_s(" %c", &firstname[0]);
 
-	firstnameArray[0] = firstname;
-	lastnameArray[0] = lastname;
+	char *pLastname = &lastname[1];
+	char *pFirstname = &firstname[1];
 
-	struPerson* pNewStart = checkFirstPerson(pStart, lastnameArray, firstnameArray);
+	*pLastname = '\0';
+	*pFirstname = '\0';
+
+	struPerson* pNewStart = checkFirstPerson(pStart, lastname, firstname);
 
 	struPerson* prev = pNewStart;
 	while (prev->pNext != NULL) {
-		if (prev->pNext->lastname[0] == lastnameArray[0] && prev->pNext->firstname[0] == firstnameArray[0]) {
+		if (prev->pNext->lastname[0] == lastname[0] && prev->pNext->firstname[0] == firstname[0]) {
 			struPerson* target = prev->pNext;
 			prev->pNext = prev->pNext->pNext;
 			free(target);
@@ -242,6 +238,7 @@ struPerson* checkFirstPerson(struPerson* pStart, char lastname[], char firstname
 
 		 return pNewStart;
 	 }
+	 return pStart;
 }
 
 void printPerson(struPerson* pStart) {
