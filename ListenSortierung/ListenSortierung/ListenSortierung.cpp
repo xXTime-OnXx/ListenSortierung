@@ -119,8 +119,10 @@ void deleteList(struPerson* pStart) {
 
 // Löscht die Person mit den selben eingegeben Nach- und Vorname
 struPerson* deletePerson(struPerson* pStart) {
-	char firstname[50];
-	char lastname[50];
+	char firstname;
+	char lastname;
+	char firstnameArray[30];
+	char lastnameArray[30];
 	struPerson* pApplicablePerson[10];
 
 	// ---------------------------------
@@ -128,15 +130,18 @@ struPerson* deletePerson(struPerson* pStart) {
 	// ---------------------------------
 	printf("Geben sie folgende Angaben der Person an welche sie löschen möchten: \n");
 	printf("Vorname: ");
-	scanf_s("%s\n", firstname);
+	scanf_s("%c\n", &firstname);
 	printf("Nachname: ");
-	scanf_s("%s\n", lastname);
+	scanf_s("%c\n", &lastname);
 
-	struPerson* pNewStart = checkFirstPerson(pStart, lastname, firstname);
+	firstnameArray[0] = firstname;
+	lastnameArray[0] = lastname;
+
+	struPerson* pNewStart = checkFirstPerson(pStart, lastnameArray, firstnameArray);
 
 	struPerson* prev = pNewStart;
 	while (prev->pNext != NULL) {
-		if (prev->pNext->lastname[0] == lastname[0] && prev->pNext->firstname[0]) {
+		if (prev->pNext->lastname[0] == lastnameArray[0] && prev->pNext->firstname[0] == firstnameArray[0]) {
 			struPerson* target = prev->pNext;
 			prev->pNext = prev->pNext->pNext;
 			free(target);
