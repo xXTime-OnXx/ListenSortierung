@@ -16,11 +16,17 @@ typedef struct Person {
 struPerson* createList();
 void deleteList(struPerson* pStart);
 struPerson* deletePerson(struPerson* pStart);
-void mergeSort(struPerson** pStart);
+void sort(struPerson** pStart);
+void mergeSort(struPerson** pStart, int variableOrder[3]);
+void quickSort(struPerson** pStart, int variableOrder[3]);
 void printPerson(struPerson* pStart);
 
-struPerson* sortedMerge(struPerson* a, struPerson* b);
+struPerson* sortedMerge(struPerson* a, struPerson* b, int variableOrder[3]);
 void frontBackSplit(struPerson* source, struPerson** frontRef, struPerson** backRef);
+struPerson* getTail(struPerson* cur);
+struPerson* quickSortRecur(struPerson* pStart, struPerson* pEnd);
+struPerson* partition(struPerson* pStart, struPerson* pEnd, struPerson** pNewStart, struPerson** pNewEnd, int variableOrder[3]);
+
 struPerson* checkFirstPerson(struPerson* pStart, char lastname[], char firstname[]);
 int printApplicablePerson(struPerson* pPerson[], int number);
 char getRandomCharacter();
@@ -53,7 +59,7 @@ int main() {
 				break;
 
 			case 4:
-				mergeSort(&pStart);
+				sort(&pStart);
 				break;
 
 			case 5:
@@ -147,9 +153,54 @@ struPerson* deletePerson(struPerson* pStart) {
 	return pNewStart;
 }
 
+void sort(struPerson** pStart) {
+	int aNumber = 0;
+	int vNumber = 0;
+	int numericalOrder[3] = { 0, 0, 0 };
+	printf("Wählen sie einen Sortieralgorythmus:\n");
+	printf("[1] Merge-Sort Algorythmus\n");
+	printf("[2] Quick-Sort Algorythmus\n");
+	printf("Geben sie die Nummer des Algorythmus ein: ");
+	scanf_s("%i", &aNumber);
 
-// Liste sortieren
-void mergeSort(struPerson** pStart) {
+	printf("\n\nNach Welchen Variablen soll die Liste sortiert werden?:\n");
+	printf("[1] Standard (Nachname, Vorname)\n");
+	printf("[2] Benutzerdefiniert\n");
+	printf("Geben sie die Nummer der gewünschten Art ein: ");
+	scanf_s("%i", &vNumber);
+
+	if (vNumber == 2) {
+		printf("\n\nNach welcher Reihenfolge der Variablen soll die Liste sortiert werden?\n");
+		printf("[1] Nachname\n");
+		printf("[2] Vorname\n");
+		printf("[3] Jahr\n");
+		printf("Erste Variable: ");
+		scanf_s("%i", &numericalOrder[0]);
+		printf("Zweite Variable: ");
+		scanf_s("%i", &numericalOrder[1]);
+		printf("Dritte Variable: ");
+		scanf_s("%i", &numericalOrder[2]);
+	}
+
+	switch (aNumber)
+	{
+	case 1:
+		mergeSort(pStart, numericalOrder);
+		break;
+
+	case 2:
+		quickSort(pStart, numericalOrder);
+		break;
+
+	default:
+		aNumber = 0;
+		break;
+	}
+}
+
+
+// Sortiert die Liste nach dem Merge-Sort Prinzip
+void mergeSort(struPerson** pStart, int variableOrder[3]) {
 	struPerson* head = *pStart;
 	struPerson* a;
 	struPerson* b;
@@ -160,27 +211,34 @@ void mergeSort(struPerson** pStart) {
 
 	frontBackSplit(head, &a, &b);
 
-	mergeSort(&a);
-	mergeSort(&b);
+	mergeSort(&a, variableOrder);
+	mergeSort(&b, variableOrder);
 
 	*pStart = sortedMerge(a, b);
 }
 
 // überfrüft ob die erste Person in der Sortierung vor der zweiten kommt
-bool lessThan(struPerson* a, struPerson* b) {
-	if (a->lastname[0] <= b->lastname[0]) {
-		if (a->firstname <= b->firstname) {
+bool lessThan(struPerson* a, struPerson* b, int variableOrder[3]) {
+	if (variableOrder[0] == 0) {
+		if (a->lastname[0] < b->lastname[0]) {
 			return true;
+		}
+		else if (a->lastname[0] == b->lastname[0]) {
+			if (a->firstname[0] <= b->firstname[0]) {
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 		else {
 			return false;
 		}
-	}
-	return false;
+	}	
 }
 
-//
-struPerson* sortedMerge(struPerson* a, struPerson* b) {
+// 
+struPerson* sortedMerge(struPerson* a, struPerson* b, int variableOrder[3]) {
 	struPerson* result = NULL;
 
 	if (a == NULL) {
@@ -190,7 +248,7 @@ struPerson* sortedMerge(struPerson* a, struPerson* b) {
 		return (a);
 	}
 
-	if (lessThan(a, b)) {
+	if (lessThan(a, b, variableOrder)) {
 		result = a;
 		result->pNext = sortedMerge(a->pNext, b);
 	}
@@ -220,6 +278,85 @@ void frontBackSplit(struPerson* source, struPerson** frontRef, struPerson** back
 	*frontRef = source;
 	*backRef = pSlow->pNext;
 	pSlow->pNext = NULL;
+}
+
+// Sortiert die liste nach dem Quick-Sort Prinzip
+void quickSort(struPerson** pStart, int variableOrder[3]) {
+	(*pStart) = quickSortRecur(*pStart, getTail(*pStart));
+}
+
+// Gibt die letzte Person der Liste zurück
+struPerson* getTail(struPerson* cur) {
+	while (cur != NULL && cur->pNext != NULL) {
+		cur = cur->pNext;
+	}
+	return cur;
+}
+
+//
+struPerson* quickSortRecur(struPerson* pStart, struPerson* pEnd) {
+	if (!pStart || pStart == pEnd) {
+		return pStart;
+	}
+
+	struPerson* pNewStart = NULL;
+	struPerson* pNewEnd = NULL;
+
+	struPerson* pivot = partition(pStart, pEnd, &pNewStart, &pNewEnd);
+
+	if (pNewStart != pivot) {
+		struPerson* tmp = pNewStart;
+		while (tmp->pNext != pivot) {
+			tmp = tmp->pNext;
+		}
+		tmp->pNext = NULL;
+
+		pNewStart = quickSortRecur(pNewStart, tmp);
+
+		tmp = getTail(pNewStart);
+		tmp->pNext = pivot;
+	}
+
+	pivot->pNext = quickSortRecur(pivot->pNext, pNewEnd);
+
+	return pNewStart;
+}
+
+// 
+struPerson* partition(struPerson* pStart, struPerson* pEnd, struPerson** pNewStart, struPerson** pNewEnd, int variableOrder[3]) {
+	struPerson* pivot = pEnd;
+	struPerson* prev = NULL;
+	struPerson* cur = pStart;
+	struPerson* tail = pivot;
+
+	while (cur != pivot) {
+		if (lessThan(cur, pivot)) {
+			if ((*pNewStart) == NULL) {
+				(*pNewStart) = cur;
+			}
+
+			prev = cur;
+			cur = cur->pNext;
+		}
+		else {
+			if (prev) {
+				prev->pNext = cur->pNext;
+			}
+			struPerson* tmp = cur->pNext;
+			cur->pNext = NULL;
+			tail->pNext = cur;
+			tail = cur;
+			cur = tmp;
+		}
+	}
+
+	if ((*pNewStart) == NULL) {
+		(*pNewStart) = pivot;
+	}
+
+	(*pNewEnd) = tail;
+
+	return pivot;
 }
 
 // Überprüft ob die erste Person der Liste gelöscht werden soll
