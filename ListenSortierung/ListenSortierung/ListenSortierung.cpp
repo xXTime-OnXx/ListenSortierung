@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
-
+#include <time.h>
 
 typedef struct Person {
 	char firstname[40];
@@ -157,6 +156,7 @@ struPerson* deletePerson(struPerson* pStart) {
 	return pNewStart;
 }
 
+// Um den Sortier Alogrythmus mit den gewünschten Angaben aus zu führen
 void sort(struPerson** pStart) {
 	int aNumber = 0;
 	int vNumber = 0;
