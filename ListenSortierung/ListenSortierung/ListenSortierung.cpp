@@ -18,6 +18,7 @@ void sort(struPerson** pStart);
 void mergeSort(struPerson** pStart, int variableOrder[3]);
 void quickSort(struPerson** pStart, int variableOrder[3]);
 void printPerson(struPerson* pStart);
+void editPerson(struPerson* pStart);
 void shutDown(struPerson* pStart);
 
 struPerson* sortedMerge(struPerson* a, struPerson* b, int variableOrder[3]);
@@ -37,7 +38,7 @@ int main() {
 	bool isListAvailable = false;
 	int input = NULL;
 	
-	while (input != 6) {
+	while (input != 7) {
 		printMenu();
 		printf("Geben sie die Zahl der gewuenschten Aktion ein: ");
 		scanf_s("%i", &input);
@@ -65,6 +66,10 @@ int main() {
 				break;
 
 			case 6:
+				editPerson(pStart);
+				break;
+
+			case 7:
 				shutDown(pStart);
 				break;
 
@@ -155,6 +160,63 @@ struPerson* deletePerson(struPerson* pStart) {
 	}
 	return pNewStart;
 }
+
+// bearbeitet die Person mit den selben eingegeben Nach- und Vorname
+void editPerson(struPerson* pStart) {
+	char lastname[30];
+	char firstname[30];
+
+	printf("Geben sie folgende Angaben der Person an welche sie bearbeiten möchten: \n");
+	printf("Nachname: ");
+	scanf_s(" %c", &lastname[0]);
+	printf("Vorname: ");
+	scanf_s(" %c", &firstname[0]);
+
+	char *pLastname = &lastname[1];
+	char *pFirstname = &firstname[1];
+
+	*pLastname = '\0';
+	*pFirstname = '\0';
+
+	struPerson* pNewStart = checkFirstPerson(pStart, lastname, firstname);
+
+	struPerson* prev = pNewStart;
+	while (prev->pNext != NULL) {
+		if (prev->pNext->lastname[0] == lastname[0] && prev->pNext->firstname[0] == firstname[0]) {
+			char input;
+			char newFirstname[30];
+			char newLastname[30];
+
+			struPerson* target = prev->pNext;
+
+			printf("Nachname: %s\tVorname: %s\t Jahrgang: %i\n", target->lastname, target->firstname, target->year);
+			printf("Möchten sie diese Person bearbeiten?[y/n]: ");
+			scanf_s(" %c", &input);
+
+ 			if (input == 'y') {
+				printf("Was sollte der neue Namen sein?(ein Buchstaben) \n");
+				printf("Nachname: ");
+				scanf_s(" %c", &newLastname[0]);
+				printf("Vorname: ");
+				scanf_s(" %c", &newFirstname[0]);
+
+				*target->firstname = newFirstname[0];
+				*target->lastname = newLastname[0];
+
+				system("cls");
+				printMenu();
+			}
+			else
+			{
+				system("cls");
+				printMenu();
+			}
+		}
+		prev = prev->pNext;
+	}
+	system("cls");
+}
+
 
 // Um den Sortier Alogrythmus mit den gewünschten Angaben aus zu führen
 void sort(struPerson** pStart) {
@@ -476,7 +538,8 @@ void printMenu() {
 	printf("\n[3] Person loeschen");
 	printf("\n[4] Liste sortieren");
 	printf("\n[5] Liste ausgeben");
-	printf("\n[6] Programm beenden\n\n");
+	printf("\n[6] Person bearbeiten");
+	printf("\n[7] Programm beenden\n\n");
 }
 
 
