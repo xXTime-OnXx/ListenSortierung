@@ -22,6 +22,7 @@ void printPerson(struPerson* pStart);
 void editPerson(struPerson* pStart);
 void shutDown(struPerson* pStart);
 
+bool stringLessThan(char array1[50], char array2[50]);
 struPerson* sortedMerge(struPerson* a, struPerson* b, int variableOrder[3]);
 void frontBackSplit(struPerson* source, struPerson** frontRef, struPerson** backRef);
 struPerson* getTail(struPerson* cur);
@@ -309,7 +310,7 @@ void mergeSort(struPerson** pStart, int variableOrder[3]) {
 // überfrüft ob die erste Person in der Sortierung vor der zweiten kommt
 bool lessThan(struPerson* a, struPerson* b, int variableOrder[3]) {
 	if (variableOrder[0] == 0) {
-		if (a->lastname[0] < b->lastname[0]) {
+		if (stringLessThan(a->lastname, b->lastname)) { // a->lastname[0] < b->lastname[0]
 			return true;
 		}
 		else if (a->lastname[0] == b->lastname[0]) {
@@ -328,7 +329,7 @@ bool lessThan(struPerson* a, struPerson* b, int variableOrder[3]) {
 		for (int i = 0; i < 3; i++) {
 			if (variableOrder[i] == 1) {
 				if (a->lastname[0] < b->lastname[0]) {
-					return true;
+					return false;
 				}
 				else if (a->lastname[0] < b->lastname[0]) {
 					continue;
@@ -364,6 +365,32 @@ bool lessThan(struPerson* a, struPerson* b, int variableOrder[3]) {
 			}
 		}
 		return true;
+	}
+}
+
+bool stringLessThan(char array1[50], char array2[50]) {
+	char* pCharOfArray1 = &array1[0];
+	char* pCharOfArray2 = &array2[0];
+
+	bool isAtEnd = false;
+	while (!isAtEnd) {
+		if (*pCharOfArray1 == '\0') {
+			// Hier nochmals auf gleich prüfen
+		}
+		if (*pCharOfArray2 == '\0') {
+			return false;
+		}
+		if (*pCharOfArray1 < *pCharOfArray2) {
+			return true;
+		}
+		else if (*pCharOfArray1 == *pCharOfArray2) {
+			pCharOfArray1++;
+			pCharOfArray2++;
+			continue;
+		}
+		else {
+			return false;
+		}
 	}
 }
 
