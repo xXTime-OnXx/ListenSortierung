@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <Windows.h>
 
 typedef struct Person {
 	char firstname[40];
@@ -130,7 +131,7 @@ struPerson* deletePerson(struPerson* pStart) {
 	char lastname[30];
 	char firstname[30];
 
-	printf("Geben sie folgende Angaben der Person an welche sie löschen möchten: \n");
+	printf("Geben sie folgende Angaben der Person an welche sie loeschen moechten: \n");
 	printf("Nachname: ");
 	scanf_s(" %c", &lastname[0]);
 	printf("Vorname: ");
@@ -158,9 +159,14 @@ struPerson* deletePerson(struPerson* pStart) {
 
 // Um den Sortier Alogrythmus mit den gewünschten Angaben aus zu führen
 void sort(struPerson** pStart) {
+	clock_t start, finish;
+	double time = 0.0;
+
 	int aNumber = 0;
 	int vNumber = 0;
 	int numericalOrder[3] = { 0, 0, 0 };
+	double time1 = 0.0;
+	double tstart;
 	printf("Wählen sie einen Sortieralgorythmus:\n");
 	printf("[1] Merge-Sort Algorythmus\n");
 	printf("[2] Quick-Sort Algorythmus\n");
@@ -187,13 +193,29 @@ void sort(struPerson** pStart) {
 	}
 
 	switch (aNumber)
-	{
+	{ 
 	case 1:
+		start = clock();
+
 		mergeSort(pStart, numericalOrder);
+
+		finish = clock();
+		time = finish - start;
+
+		printf("Merge-Sort Sortierzeit: %lf\n", time);
+		system("pause");
 		break;
 
 	case 2:
+		start = clock();
+
 		quickSort(pStart, numericalOrder);
+
+		finish = clock();
+		time = finish - start;
+
+		printf("Quick-Sort Sortierzeit: %lf\n", time);
+		system("pause");
 		break;
 
 	default:
@@ -201,6 +223,7 @@ void sort(struPerson** pStart) {
 		break;
 	}
 }
+
 
 
 // Sortiert die Liste nach dem Merge-Sort Prinzip
