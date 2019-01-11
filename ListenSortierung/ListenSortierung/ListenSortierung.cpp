@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <string.h>
 
 
 
@@ -20,15 +19,15 @@ void sort(struPerson** pStart);
 void mergeSort(struPerson** pStart, int variableOrder[3]);
 void quickSort(struPerson** pStart, int variableOrder[3]);
 void printPerson(struPerson* pStart);
+void shutDown(struPerson* pStart);
 
 struPerson* sortedMerge(struPerson* a, struPerson* b, int variableOrder[3]);
 void frontBackSplit(struPerson* source, struPerson** frontRef, struPerson** backRef);
 struPerson* getTail(struPerson* cur);
-struPerson* quickSortRecur(struPerson* pStart, struPerson* pEnd);
+struPerson* quickSortRecur(struPerson* pStart, struPerson* pEnd, int variableOrder[3]);
 struPerson* partition(struPerson* pStart, struPerson* pEnd, struPerson** pNewStart, struPerson** pNewEnd, int variableOrder[3]);
 
 struPerson* checkFirstPerson(struPerson* pStart, char lastname[], char firstname[]);
-int printApplicablePerson(struPerson* pPerson[], int number);
 char getRandomCharacter();
 int getRandomYear();
 void printMenu();
@@ -66,6 +65,9 @@ int main() {
 				printPerson(pStart);
 				break;
 
+			case 6:
+				shutDown(pStart);
+				break;
 
 			default:
 				input = 0;
@@ -113,12 +115,14 @@ struPerson* createList() {
 
 // Löscht und entfernt alle Element der angegebene Liste
 void deleteList(struPerson* pStart) {
-	struPerson* pFirst = pStart;
-	struPerson* pNext = pStart->pNext;
-	while (pFirst != NULL) {
-		pNext = pFirst->pNext;
-		free(pFirst);
-		pFirst = pNext;
+	if (pStart != NULL) {
+		struPerson* pFirst = pStart;
+		struPerson* pNext = pStart->pNext;
+		while (pFirst != NULL) {
+			pNext = pFirst->pNext;
+			free(pFirst);
+			pFirst = pNext;
+		}
 	}
 }
 
@@ -214,7 +218,7 @@ void mergeSort(struPerson** pStart, int variableOrder[3]) {
 	mergeSort(&a, variableOrder);
 	mergeSort(&b, variableOrder);
 
-	*pStart = sortedMerge(a, b);
+	*pStart = sortedMerge(a, b, variableOrder);
 }
 
 // überfrüft ob die erste Person in der Sortierung vor der zweiten kommt
@@ -234,7 +238,48 @@ bool lessThan(struPerson* a, struPerson* b, int variableOrder[3]) {
 		else {
 			return false;
 		}
-	}	
+	}
+	else {
+		for (int i = 0; i < 3; i++) {
+			if (variableOrder[i] == 1) {
+				if (a->lastname[0] < b->lastname[0]) {
+					return true;
+				}
+				else if (a->lastname[0] < b->lastname[0]) {
+					continue;
+				}
+				else {
+					return false;
+				}
+			}
+			else if (variableOrder[i] == 2) {
+				if (a->firstname[0] < b->firstname[0]) {
+					return true;
+				}
+				else if (a->firstname[0] == b->firstname[0]) {
+					continue;
+				}
+				else {
+					return false;
+				}
+			}
+			else if (variableOrder[i] == 3) {
+				if (a->year < b->year) {
+					return true;
+				}
+				else if (a->year == b->year) {
+					continue;
+				}
+				else {
+					return false;
+				}
+			}
+			else {
+				continue;
+			}
+		}
+		return true;
+	}
 }
 
 // 
@@ -250,12 +295,12 @@ struPerson* sortedMerge(struPerson* a, struPerson* b, int variableOrder[3]) {
 
 	if (lessThan(a, b, variableOrder)) {
 		result = a;
-		result->pNext = sortedMerge(a->pNext, b);
+		result->pNext = sortedMerge(a->pNext, b, variableOrder);
 	}
 	else
 	{
 		result = b;
-		result->pNext = sortedMerge(a, b->pNext);
+		result->pNext = sortedMerge(a, b->pNext, variableOrder);
 	}
 	return (result);
 }
@@ -282,7 +327,7 @@ void frontBackSplit(struPerson* source, struPerson** frontRef, struPerson** back
 
 // Sortiert die liste nach dem Quick-Sort Prinzip
 void quickSort(struPerson** pStart, int variableOrder[3]) {
-	(*pStart) = quickSortRecur(*pStart, getTail(*pStart));
+	(*pStart) = quickSortRecur(*pStart, getTail(*pStart), variableOrder);
 }
 
 // Gibt die letzte Person der Liste zurück
@@ -294,7 +339,7 @@ struPerson* getTail(struPerson* cur) {
 }
 
 //
-struPerson* quickSortRecur(struPerson* pStart, struPerson* pEnd) {
+struPerson* quickSortRecur(struPerson* pStart, struPerson* pEnd, int variableOrder[3]) {
 	if (!pStart || pStart == pEnd) {
 		return pStart;
 	}
@@ -302,7 +347,7 @@ struPerson* quickSortRecur(struPerson* pStart, struPerson* pEnd) {
 	struPerson* pNewStart = NULL;
 	struPerson* pNewEnd = NULL;
 
-	struPerson* pivot = partition(pStart, pEnd, &pNewStart, &pNewEnd);
+	struPerson* pivot = partition(pStart, pEnd, &pNewStart, &pNewEnd, variableOrder);
 
 	if (pNewStart != pivot) {
 		struPerson* tmp = pNewStart;
@@ -311,13 +356,13 @@ struPerson* quickSortRecur(struPerson* pStart, struPerson* pEnd) {
 		}
 		tmp->pNext = NULL;
 
-		pNewStart = quickSortRecur(pNewStart, tmp);
+		pNewStart = quickSortRecur(pNewStart, tmp, variableOrder);
 
 		tmp = getTail(pNewStart);
 		tmp->pNext = pivot;
 	}
 
-	pivot->pNext = quickSortRecur(pivot->pNext, pNewEnd);
+	pivot->pNext = quickSortRecur(pivot->pNext, pNewEnd, variableOrder);
 
 	return pNewStart;
 }
@@ -330,7 +375,7 @@ struPerson* partition(struPerson* pStart, struPerson* pEnd, struPerson** pNewSta
 	struPerson* tail = pivot;
 
 	while (cur != pivot) {
-		if (lessThan(cur, pivot)) {
+		if (lessThan(cur, pivot, variableOrder)) {
 			if ((*pNewStart) == NULL) {
 				(*pNewStart) = cur;
 			}
@@ -357,6 +402,11 @@ struPerson* partition(struPerson* pStart, struPerson* pEnd, struPerson** pNewSta
 	(*pNewEnd) = tail;
 
 	return pivot;
+}
+
+void shutDown(struPerson* pStart) {
+	deleteList(pStart);
+	exit(0);
 }
 
 // Überprüft ob die erste Person der Liste gelöscht werden soll
@@ -403,23 +453,6 @@ void printPerson(struPerson* pStart) {
 	}
 
 	system("pause");
-}
-
-// Gibt alle Personen aus welche den gleichen Namen haben und gibt die ausgewählte Person zurück
-int printApplicablePerson(struPerson* pPerson[], int number) {
-	int person = NULL;
-	printf("Welche Person moechten sie loeschen?\n\n");
-
-	for (int i = 0; i < number; i++) {
-		char *firstname = &pPerson[i]->firstname[0];
-		char *lastname = &pPerson[i]->lastname[0];
-		printf("[%i] %s %s\n", i, firstname, lastname);
-	}
-
-	printf("Nummer: ");
-	scanf_s("%i\n", &person);
-
-	return person;
 }
 
 // Gibt einen Zufallsbuchstaben von typ char zurück
