@@ -1,7 +1,10 @@
 #include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <time.h>
+#include <iostream>
+#include <ctime>
+#include <cstdlib>
 #include <Windows.h>
 
 typedef struct Person {
@@ -22,7 +25,6 @@ void printPerson(struPerson* pStart);
 void editPerson(struPerson* pStart);
 void shutDown(struPerson* pStart);
 
-bool stringLessThan(char array1[50], char array2[50]);
 struPerson* sortedMerge(struPerson* a, struPerson* b, int variableOrder[3]);
 void frontBackSplit(struPerson* source, struPerson** frontRef, struPerson** backRef);
 struPerson* getTail(struPerson* cur);
@@ -153,7 +155,7 @@ struPerson* deletePerson(struPerson* pStart) {
 
 	struPerson* prev = pNewStart;
 	while (prev->pNext != NULL) {
-		if (prev->pNext->lastname[0] == lastname[0] && prev->pNext->firstname[0] == firstname[0]) {
+		if ((strcmp(prev->pNext->lastname, lastname) == 0) && (strcmp(prev->pNext->firstname, firstname) == 0)) {
 			struPerson* target = prev->pNext;
 			prev->pNext = prev->pNext->pNext;
 			free(target);
@@ -184,7 +186,7 @@ void editPerson(struPerson* pStart) {
 
 	struPerson* prev = pNewStart;
 	while (prev->pNext != NULL) {
-		if (prev->pNext->lastname[0] == lastname[0] && prev->pNext->firstname[0] == firstname[0]) {
+		if ((strcmp(prev->pNext->lastname, lastname) == 0) && (strcmp(prev->pNext->firstname, firstname) == 0)) {
 			char input;
 			char newFirstname[30];
 			char newLastname[30];
@@ -287,8 +289,6 @@ void sort(struPerson** pStart) {
 	}
 }
 
-
-
 // Sortiert die Liste nach dem Merge-Sort Prinzip
 void mergeSort(struPerson** pStart, int variableOrder[3]) {
 	struPerson* head = *pStart;
@@ -310,11 +310,11 @@ void mergeSort(struPerson** pStart, int variableOrder[3]) {
 // überfrüft ob die erste Person in der Sortierung vor der zweiten kommt
 bool lessThan(struPerson* a, struPerson* b, int variableOrder[3]) {
 	if (variableOrder[0] == 0) {
-		if (stringLessThan(a->lastname, b->lastname)) { // a->lastname[0] < b->lastname[0]
+		if (strcmp(a->lastname, b->lastname) < 0) {
 			return true;
 		}
-		else if (a->lastname[0] == b->lastname[0]) {
-			if (a->firstname[0] <= b->firstname[0]) {
+		else if (strcmp(a->lastname, b->lastname) == 0) {
+			if (strcmp(a->firstname, b->firstname) <= 0) {
 				return true;
 			}
 			else {
@@ -328,10 +328,10 @@ bool lessThan(struPerson* a, struPerson* b, int variableOrder[3]) {
 	else {
 		for (int i = 0; i < 3; i++) {
 			if (variableOrder[i] == 1) {
-				if (a->lastname[0] < b->lastname[0]) {
+				if (strcmp(a->lastname, b->lastname) < 0) {
 					return false;
 				}
-				else if (a->lastname[0] < b->lastname[0]) {
+				else if (strcmp(a->lastname, b->lastname) == 0) {
 					continue;
 				}
 				else {
@@ -339,10 +339,10 @@ bool lessThan(struPerson* a, struPerson* b, int variableOrder[3]) {
 				}
 			}
 			else if (variableOrder[i] == 2) {
-				if (a->firstname[0] < b->firstname[0]) {
+				if (strcmp(a->firstname, b->firstname) < 0) {
 					return true;
 				}
-				else if (a->firstname[0] == b->firstname[0]) {
+				else if (strcmp(a->firstname, b->firstname) == 0) {
 					continue;
 				}
 				else {
@@ -368,33 +368,7 @@ bool lessThan(struPerson* a, struPerson* b, int variableOrder[3]) {
 	}
 }
 
-bool stringLessThan(char array1[50], char array2[50]) {
-	char* pCharOfArray1 = &array1[0];
-	char* pCharOfArray2 = &array2[0];
-
-	bool isAtEnd = false;
-	while (!isAtEnd) {
-		if (*pCharOfArray1 == '\0') {
-			// Hier nochmals auf gleich prüfen
-		}
-		if (*pCharOfArray2 == '\0') {
-			return false;
-		}
-		if (*pCharOfArray1 < *pCharOfArray2) {
-			return true;
-		}
-		else if (*pCharOfArray1 == *pCharOfArray2) {
-			pCharOfArray1++;
-			pCharOfArray2++;
-			continue;
-		}
-		else {
-			return false;
-		}
-	}
-}
-
-// 
+// Vergleicht welche der Person zu erst kommt und wechselt diese demnach
 struPerson* sortedMerge(struPerson* a, struPerson* b, int variableOrder[3]) {
 	struPerson* result = NULL;
 
@@ -417,7 +391,7 @@ struPerson* sortedMerge(struPerson* a, struPerson* b, int variableOrder[3]) {
 	return (result);
 }
 
-//
+// Splittet die Liste und gibt die beiden anhand der ref. Parameter zurück
 void frontBackSplit(struPerson* source, struPerson** frontRef, struPerson** backRef) {
 	struPerson* pFast;
 	struPerson* pSlow;
@@ -450,7 +424,7 @@ struPerson* getTail(struPerson* cur) {
 	return cur;
 }
 
-//
+// Hier wird die Liste abgesehen vom letzten Element Sortiert
 struPerson* quickSortRecur(struPerson* pStart, struPerson* pEnd, int variableOrder[3]) {
 	if (!pStart || pStart == pEnd) {
 		return pStart;
@@ -479,7 +453,7 @@ struPerson* quickSortRecur(struPerson* pStart, struPerson* pEnd, int variableOrd
 	return pNewStart;
 }
 
-// 
+// Partitioniert die Liste mit dem letzten Element
 struPerson* partition(struPerson* pStart, struPerson* pEnd, struPerson** pNewStart, struPerson** pNewEnd, int variableOrder[3]) {
 	struPerson* pivot = pEnd;
 	struPerson* prev = NULL;
@@ -516,6 +490,7 @@ struPerson* partition(struPerson* pStart, struPerson* pEnd, struPerson** pNewSta
 	return pivot;
 }
 
+// Löscht die Liste und beendet das Programm
 void shutDown(struPerson* pStart) {
 	deleteList(pStart);
 	exit(0);
@@ -540,6 +515,7 @@ struPerson* checkFirstPerson(struPerson* pStart, char lastname[], char firstname
 	 return pStart;
 }
 
+// Gibt die Personen der Liste aus
 void printPerson(struPerson* pStart) {
 	int number = 0;
 	printf("Wie viele Personen der Liste sollen angezeigt werden? (0 = alle): ");
